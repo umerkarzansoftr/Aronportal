@@ -1,0 +1,182 @@
+<h2>Fixtures</h2>
+<button *ngIf="!isShown" (click)="toggleShow()" mat-raised-button color="primary">Add</button>
+<div class="row" *ngIf="isShown">
+  
+  <div class="card col-md-8" >
+    <div class="card-header">
+      <mat-icon>check_box_outline</mat-icon>
+
+      <button class="right" (click)="toggleShow()" mat-raised-button color="primary"><mat-icon>cancel</mat-icon></button>
+    </div>
+    <div class="card-body">
+      <div>
+        <form [formGroup]="mainForm" (ngSubmit)="onSubmit()">
+          <input type="hidden" formControlName="id" id="id" />
+          <div class="form-group required">
+            <label class=" control-label">Fixture Name</label>
+            <div><input type="text" formControlName="fixtureName" class="form-control"></div>
+          </div>
+          <div class="form-group required">
+            <label class="control-label">Fixture No</label>
+            <div><input type="text" formControlName="fixtureCode" class="form-control"></div>
+          </div>
+          <div class="form-group required">
+            <label class="control-label">Fixture Category</label>
+            <div class="">
+              <select class="form-control" formControlName="fixtureCategoryId" id="type" data-live-search="true">
+                <option *ngFor="let test of testModel" [value]="test.id">{{test.fixtureCategoryName}}</option>
+              </select>
+            </div>
+
+
+          </div>
+
+          <div class="form-group">
+            <label class=" control-label">Cost</label>
+            <div><input type="text" formControlName="fixtureCost" class="form-control"></div>
+          </div>
+          <div style="width: 100%; height: 35px;  background-color: #F3F5F6; text-align: center">
+            <span style="font-size: 20px; z-index:111; padding: 0 10px;">
+              Add Item Stock
+            </span>
+          </div>
+          <table class="table" matSort (matSortChange)="sortData($event)">
+            <thead>
+              <tr>
+
+                <th mat-sort-header="name">
+                  Part
+                </th>
+                <th mat-sort-header="calories">
+                  Cost
+                </th>
+                <th mat-sort-header="fat">
+                  Quantity
+                </th>
+                <th>
+                  Remove
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let obj of sortedData; let i=index">
+
+                <td>
+                  <div class="form-group">
+
+
+
+                    <ng-select class="form-control" (change)="onAdd($event,i)" name="id{{i}}" [(ngModel)]="obj.partId" [ngModelOptions]="{standalone: true}">
+                      <ng-option *ngFor="let title of anyD" [value]="title.id">{{title.partName}}</ng-option>
+
+
+                    </ng-select>
+                  </div>
+                </td>
+                <td>
+                  <div class="form-group">
+
+                    <input type="text" class="form-control" name="cost{{i}}" [value]="test" [(ngModel)]="obj.cost" [ngModelOptions]="{standalone: true}" />
+
+                  </div>
+                </td>
+                <td>
+                  <div class="form-group">
+
+                    <input type="number" class="form-control" (keyup)="onKey($event)" name="quantity{{i}}" [(ngModel)]="obj.quantity" [ngModelOptions]="{standalone: true}" [value]=1 />
+                  </div>
+                </td>
+                <td>
+                  <div class="form-group">
+                    <span (click)="removeForm(i)" class="btn btn-danger">-</span>
+                  </div>
+                </td>
+
+              </tr>
+            </tbody>
+          </table>
+          <span (click)="addForm()" class="btn btn-success">Add Parts</span>
+          
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+ <table class="col-md-4 table">
+   
+   <thead>
+     <tr>
+       <th>
+         Parts
+       </th>
+       <th>
+         Cost
+       </th>
+       <th>
+         Quantity
+       </th>
+     </tr>
+   </thead>
+   <tbody>
+     <tr *ngFor="let obj of dataArray">
+       <td>
+         {{ getNamebYiD(obj.partId) }}
+       </td>
+       <td>
+         {{obj.cost}}
+       </td>
+       <td>
+         {{obj.quantity}}
+       </td>
+     </tr>
+   </tbody>
+
+ </table>
+</div>
+<div class="basic-container">
+  <mat-form-field>
+    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
+  </mat-form-field>
+  <table mat-table [dataSource]="dataSource" matSort>
+
+    <ng-container matColumnDef="fixtureName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Part Number </th>
+      <td mat-cell *matCellDef="let part"> {{part.fixtureName}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="fixtureCode">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Part</th>
+      <td mat-cell *matCellDef="let user"> {{user.fixtureCode}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="fixtureCategory">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Inventory Category </th>
+      <td mat-cell *matCellDef="let user"> {{user.fixtureCategory.fixtureCategoryName }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="fixtureCost">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Component Group</th>
+      <td mat-cell *matCellDef="let user"> ${{user.fixtureCost }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="copy">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Copy Fixture</th>
+      <td mat-cell *matCellDef="let user"><button mat-icon-button color="primary" matTooltip="Click Edit Button" (click)="copyData(user)"><mat-icon>filter_none</mat-icon></button>  </td>
+    </ng-container>
+    <ng-container matColumnDef="edit">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Add Quantity </th>
+      <td mat-cell *matCellDef="let user"><button mat-flat-button color="primary" matTooltip="Click Edit Button" (click)="loadEmployeeToEdit(user)">Edit</button>  </td>
+    </ng-container>
+
+    <ng-container matColumnDef="del">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> </th>
+      <td mat-cell *matCellDef="let user"><button mat-icon-button color="warn" (click)="deleteEmp(user.id)" aria-label="Example icon-button with a heart icon"><mat-icon>delete_outline</mat-icon></button></td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+</div>
+
